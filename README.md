@@ -1,7 +1,4 @@
 # Filter the Spurious, Recover the Missing: A Framework for Hardware Trojan Detection
-
-The proposed framework loads existing Trojan detection results, filters false positives, and recovers missing Trojan nodes. PayloadChecker and ModuleChecker provide structural evidence, while the LLM-based Generator uses these results and retrieved references to refine the candidates.
-
 ## Usage
 
 Requires Python 3.10+. Select a model configuration in `configs/` and set its API credential. `TOP_K` specifies the number of highest-ranked detector nodes used as initial candidates.
