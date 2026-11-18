@@ -1,6 +1,6 @@
 # Filter the Spurious, Recover the Missing: A Framework for Hardware Trojan Detection
 
-The proposed framework takes saved predictions from a hardware Trojan detector, such as NHTD-GL, and the corresponding circuit netlist. It checks how the predicted gates connect, adds missing gates, and uses an LLM to remove gates that do not belong to the suspected Trojan. The output is a list of nodes to inspect.
+The proposed framework uses structural analysis and LLM reasoning to refine predictions from node-level hardware Trojan detection algorithms, reducing false positives and recovering missed Trojan nodes.
 
 ## Run the example
 
