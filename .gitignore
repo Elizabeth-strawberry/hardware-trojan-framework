@@ -1,0 +1,33 @@
+# Credentials and local configuration
+.env
+.env.*
+!.env.example
+*.env
+*api_key*.py
+*.pem
+*.key
+
+# Runtime and private experiment data
+outputs/
+neo4j_data/
+data/
+knowledge_base/
+checkpoints/
+tool_results/
+*.pt
+*.pth
+*.pkl
+*.faiss
+*.log
+
+# Python/build/editor files
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+.pytest_cache/
+.DS_Store
+.idea/
+.vscode/

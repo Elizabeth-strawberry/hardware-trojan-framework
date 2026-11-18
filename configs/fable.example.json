@@ -1,0 +1,14 @@
+{
+  "api": "messages",
+  "model": "claude-fable-5-1",
+  "base_url": "https://tdyun.ai/v1",
+  "api_key_env": "FABLE_API_KEY",
+  "request_options": {
+    "thinking": {"type": "adaptive"},
+    "output_config": {"effort": "low"}
+  },
+  "timeout_seconds": 1200,
+  "max_output_tokens": 32768,
+  "max_rag_calls": 3,
+  "max_result_calls": 6
+}

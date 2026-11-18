@@ -1,0 +1,12 @@
+{
+  "api": "chat_completions",
+  "model": "deepseek-v4-pro",
+  "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+  "api_key_env": "DASHSCOPE_API_KEY",
+  "reasoning_effort": "high",
+  "enable_thinking": true,
+  "timeout_seconds": 1200,
+  "max_output_tokens": 32768,
+  "max_rag_calls": 3,
+  "max_result_calls": 6
+}

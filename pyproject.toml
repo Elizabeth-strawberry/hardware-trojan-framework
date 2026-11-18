@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "trojan-refine"
+version = "0.1.0"
+description = "Structural refinement of node-level hardware Trojan detection results"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+api = ["openai>=1.66,<3"]
+research = ["torch>=2.1,<3", "torch-geometric>=2.5,<3", "faiss-cpu>=1.8,<2", "numpy>=1.25,<3"]
+
+[project.scripts]
+trojan-refine = "trojan_refinement.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
