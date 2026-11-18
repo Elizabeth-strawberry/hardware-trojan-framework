@@ -1,18 +1,36 @@
 # Filter the Spurious, Recover the Missing: A Framework for Hardware Trojan Detection
-## Usage
 
-Requires Python 3.10+. Select a model configuration in `configs/` and set its API credential. `TOP_K` specifies the number of highest-ranked detector nodes used as initial candidates.
+The proposed framework takes saved predictions from a hardware Trojan detector, such as NHTD-GL, and the corresponding circuit netlist. It checks how the predicted gates connect, adds missing gates, and uses an LLM to remove gates that do not belong to the suspected Trojan. The output is a list of nodes to inspect.
 
-| Command | Purpose |
-| --- | --- |
-| `prepare` | Load detector predictions and run PayloadChecker and ModuleChecker to construct and recover candidate graphs. |
-| `review` | Use the LLM to refine candidate nodes based on recorded structural results and retrieved references. |
-| `score` | Compare candidates with ground-truth labels to compute recall and inspection size. Labels are used only for evaluation. |
+## Run the example
+
+Use Python 3.10 or newer. Run these commands from the repository directory:
 
 ```bash
 python -m pip install -e '.[api]'
 python examples/create_demo.py
+```
 
+This creates a small example circuit, simulated detector predictions, and labels in `outputs/demo/`. These are demonstration files, not the paper's experimental data.
+
+Set your API key and enter how many of the highest-ranked detector nodes to start with:
+
+```bash
+export OPENAI_API_KEY="your-api-key"
+read -r -p "Number of initial detector nodes: " TOP_K
+```
+
+`TOP_K` is a node count, not a multiple of the number of Trojan nodes. The example contains six ranked nodes; choose a positive integer up to six.
+
+Run the three steps below:
+
+| Command | What it does |
+| --- | --- |
+| `prepare` | Load the predictions. PayloadChecker searches for payload gates and expands the connected logic. ModuleChecker checks the Trojan modules and recovers missing gates. |
+| `review` | Ask the LLM to read the saved detector and structural-check results and select the nodes to keep. |
+| `score` | Compare the selected nodes with the labels to calculate recall and the number of nodes to inspect. Only this step uses the labels. |
+
+```bash
 trojan-refine prepare \
   --report outputs/demo/predictions.json \
   --variant synthetic_demo --top-k "$TOP_K" --trojan-type combinational \
@@ -27,19 +45,18 @@ trojan-refine score \
   --labels outputs/demo/labels.json --output outputs/demo/metrics.json
 ```
 
-For experiments, supply detector predictions and the corresponding netlist; FSM and Counter circuits also require `--library`.
+The selected nodes are saved in `outputs/demo/review.json`; the evaluation results are saved in `outputs/demo/metrics.json`. The `review` step sends requests to the configured model API.
 
-## Examples
+## Use your own circuit
 
-- [create_demo.py](examples/create_demo.py) generates a sample circuit, simulated detector predictions, and labels for the `prepare → review → score` workflow.
-- [create_training_corpus.py](examples/create_training_corpus.py) generates module-annotated reference graphs for GraphMentor training and FAISS index construction.
+Run your detector first, then supply its saved predictions to `--report`. Use the generated `outputs/demo/predictions.json` as a format example. Set `--variant` to your circuit's name and use `--netlist` to specify its netlist file. For FSM or Counter Trojans, set `--trojan-type` to `fsm` or `counter` and provide the standard-cell Verilog library with `--library`.
 
-Both scripts use synthetic data for demonstration, not the paper's experimental data.
+Choose a model configuration from `configs/`, set the API key named by its `api_key_env` field, and pass that configuration to `review --config`.
 
-## Training and retrieval
+## Optional: reference retrieval
 
-Install `pip install -e '.[research,api]'` for GraphMentor and FAISS. Use `train-mentor` to train on annotated reference graphs and `build-vector-index` to build the retrieval bank. Exclude test hosts from training.
+Reference retrieval lets ModuleChecker and the LLM compare a suspected Trojan with known examples. Install the extra dependencies with `python -m pip install -e '.[research,api]'`. Train GraphMentor with `train-mentor`, then create a searchable FAISS index with `build-vector-index`. Pass the index directory through `--mentor-index` to both `prepare` and `review`. Keep test circuits out of the training references.
 
-Pass `--mentor-index` to enable learned retrieval and `--neo4j` during preparation to enable connectivity queries. Configure Neo4j through `NEO4J_HTTP_URI`, `NEO4J_DATABASE`, `NEO4J_USER`, and `NEO4J_PASSWORD`.
+[examples/create_training_corpus.py](examples/create_training_corpus.py) creates sample reference graphs with module labels to demonstrate training. To use Neo4j for tracing connections during preparation, configure the connection variables listed in `.env.example` and add `--neo4j` to `prepare`. Set these variables in your shell; `.env.example` is not loaded automatically.
 
-Use `trojan-refine <command> --help` for options. Run tests with `python -m unittest discover -s tests`.
+Run `trojan-refine <command> --help` for command options, or `python -m unittest discover -s tests` to run the tests.
