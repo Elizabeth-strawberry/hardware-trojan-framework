@@ -59,4 +59,4 @@ Reference retrieval lets ModuleChecker and the LLM compare a suspected Trojan wi
 
 [examples/create_training_corpus.py](examples/create_training_corpus.py) creates sample reference graphs with module labels to demonstrate training. To use Neo4j for tracing connections during preparation, configure the connection variables listed in `.env.example` and add `--neo4j` to `prepare`. Set these variables in your shell; `.env.example` is not loaded automatically.
 
-Run `trojan-refine <command> --help` for command options, or `python -m unittest discover -s tests` to run the tests.
+Run `trojan-refine <command> --help` for command options.
